@@ -43,4 +43,3 @@ export class Notified {
     fs.writeFileSync(path, JSON.stringify(ids))
   }
 }
-
