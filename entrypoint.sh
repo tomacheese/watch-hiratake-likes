@@ -2,9 +2,7 @@
 
 while :
 do
-  python -m src
+  yarn build || true
 
-  # wait 10 minutes
-  echo Waiting 10 minutes...
-  sleep 600
+  echo "Restarting..."
 done
