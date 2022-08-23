@@ -1,17 +1,21 @@
-FROM python:3.10.6-alpine3.16
+FROM node:18
 
-RUN apk update && \
-  apk add dumb-init && \
-  rm -rf /var/cache/apk/*
+RUN apt-get update && \
+  apt-get upgrade -y && \
+  apt-get clean \
+  && rm -rf /var/lib/apt/lists/*
 
 WORKDIR /app
-COPY requirements.txt .
-RUN pip install --no-cache-dir -r requirements.txt
 
-COPY src src
+COPY package.json .
+COPY yarn.lock .
+RUN yarn install && \
+  yarn cache clean
 
 COPY entrypoint.sh .
 RUN chmod +x entrypoint.sh
 
-ENTRYPOINT ["dumb-init", "--"]
-CMD ["/app/entrypoint.sh"]
+COPY src src
+COPY tsconfig.json .
+
+ENTRYPOINT [ "/app/entrypoint.sh" ]

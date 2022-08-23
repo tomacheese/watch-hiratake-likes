@@ -1,4 +1,4 @@
-version: "3.8"
+version: '3.8'
 
 services:
   app:
@@ -7,4 +7,7 @@ services:
       - type: bind
         source: ./data/
         target: /data/
+    environment:
+      CONFIG_PATH: /data/config.yml
+      NOTIFIED_PATH: /data/notified.json
     init: true
