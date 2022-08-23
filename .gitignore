@@ -78,7 +78,8 @@ fabric.properties
 .idea/caches/build_file_checksums.ser
 
 # ---- other ----
-node_modules
-dist
+node_modules/
+dist/
+data/
 config.yml
 yarn-error.log

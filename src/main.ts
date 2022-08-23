@@ -25,35 +25,11 @@ client.on('ready', async () => {
   setInterval(async () => {
     await crawler.crawl('543927796')
   }, 1000 * 60 * 10)
+  await crawler.crawl('543927796')
 })
 
 client.on('interactionCreate', async (interaction) => {
   if (!interaction.isButton()) return
-  if (interaction.customId.startsWith('retweet-')) {
-    if (interaction.user.id !== config.discord.ownerId) {
-      await interaction.reply({
-        content:
-          'このボタンはbook000でリツイートする用のボタンです。リンクボタンを利用してください。',
-        ephemeral: true,
-      })
-      return
-    }
-    const tweetId = interaction.customId.split('-')[1]
-    await twitterClient.v1
-      .post('statuses/retweet/' + tweetId + '.json')
-      .then(() => {
-        interaction.reply({
-          content: ':white_check_mark:',
-          ephemeral: true,
-        })
-      })
-      .catch((e) => {
-        interaction.reply({
-          content: e.message,
-          ephemeral: true,
-        })
-      })
-  }
   if (interaction.customId.startsWith('favorite-')) {
     if (interaction.user.id !== config.discord.ownerId) {
       await interaction.reply({

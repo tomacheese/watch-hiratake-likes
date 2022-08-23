@@ -6,7 +6,7 @@ import {
   TextChannel,
 } from 'discord.js'
 import { TwitterApi } from 'twitter-api-v2'
-import { Config } from './utlis'
+import { Config, Notified } from './utlis'
 
 export default class Crawler {
   private client: TwitterApi
@@ -33,10 +33,16 @@ export default class Crawler {
     })
     const tweets = favorites.tweets
 
+    const isFirst = Notified.isFirst()
+
     for (const tweet of tweets) {
       if (!tweet.entities.media) {
         continue
       }
+      if (Notified.isNotified(tweet.id_str)) {
+        continue
+      }
+
       const tweetUrl =
         'https://twitter.com/' +
         tweet.user.screen_name +
@@ -46,10 +52,6 @@ export default class Crawler {
       console.log(tweetUrl)
 
       const row = new ActionRowBuilder<ButtonBuilder>().addComponents(
-        new ButtonBuilder()
-          .setCustomId('retweet-' + tweet.id_str)
-          .setEmoji('🔁')
-          .setStyle(ButtonStyle.Secondary),
         new ButtonBuilder()
           .setCustomId('favorite-' + tweet.id_str)
           .setEmoji('❤️')
@@ -64,11 +66,13 @@ export default class Crawler {
           .setStyle(ButtonStyle.Link)
       )
 
-      await this.channel.send({
-        content: tweetUrl,
-        components: [row],
-      })
-      return
+      if (!isFirst) {
+        await this.channel.send({
+          content: tweetUrl,
+          components: [row],
+        })
+      }
+      Notified.addNotified(tweet.id_str)
     }
   }
 }
