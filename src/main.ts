@@ -1,3 +1,4 @@
+import axios from 'axios'
 import { Client } from 'discord.js'
 import { TwitterApi } from 'twitter-api-v2'
 import Crawler from './crawler'
@@ -5,13 +6,13 @@ import { Config, getConfig } from './utlis'
 
 const config = getConfig()
 const client = new Client({
-  intents: ['Guilds', 'GuildMembers', 'GuildMessages'],
+  intents: ['Guilds', 'GuildMembers', 'GuildMessages']
 })
 const twitterClient = new TwitterApi({
   appKey: config.twitter.consumerKey,
   appSecret: config.twitter.consumerSecret,
   accessToken: config.twitter.accessToken,
-  accessSecret: config.twitter.accessSecret,
+  accessSecret: config.twitter.accessSecret
 })
 
 export function getClient() {
@@ -41,25 +42,50 @@ client.on('interactionCreate', async (interaction) => {
       await interaction.reply({
         content:
           'このボタンはbook000でふぁぼする用のボタンです。リンクボタンを利用してください。',
-        ephemeral: true,
+        ephemeral: true
       })
       return
     }
     const tweetId = interaction.customId.split('-')[1]
     await twitterClient.v1
       .post(`favorites/create.json`, {
-        id: tweetId,
+        id: tweetId
       })
       .then(() => {
         interaction.reply({
-          content: ':white_check_mark:',
-          ephemeral: true,
+          content: ':heart: -> :white_check_mark:',
+          ephemeral: true
         })
       })
       .catch((e) => {
         interaction.reply({
-          content: e.message,
-          ephemeral: true,
+          content: `:heart: -> :x: ${e.message}`,
+          ephemeral: true
+        })
+      })
+  }
+  if (interaction.customId.startsWith('priv-fav-')) {
+    if (interaction.user.id !== config.discord.ownerId) {
+      await interaction.reply({
+        content:
+          'このボタンはbook000でふぁぼする用のボタンです。リンクボタンを利用してください。',
+        ephemeral: true
+      })
+      return
+    }
+    const tweetId = interaction.customId.split('-')[1]
+    await axios
+      .post(`http://gateway.docker.internal:7002/favorite/${tweetId}`)
+      .then(() => {
+        interaction.reply({
+          content: ':comet: -> :white_check_mark:',
+          ephemeral: true
+        })
+      })
+      .catch((e) => {
+        interaction.reply({
+          content: `:comet: -> :x: ${e.message}`,
+          ephemeral: true
         })
       })
   }
