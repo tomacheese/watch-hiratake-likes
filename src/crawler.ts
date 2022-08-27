@@ -63,6 +63,10 @@ export default class Crawler {
           .setEmoji('❤')
           .setStyle(ButtonStyle.Secondary),
         new ButtonBuilder()
+          .setCustomId('priv-fav-' + tweet.id_str)
+          .setEmoji('☄️')
+          .setStyle(ButtonStyle.Secondary),
+        new ButtonBuilder()
           .setEmoji('🔁')
           .setURL(`https://twitter.com/intent/retweet?tweet_id=${tweet.id_str}`)
           .setStyle(ButtonStyle.Link),
