@@ -6,18 +6,21 @@ import {
   TextChannel,
 } from 'discord.js'
 import { TwitterApi } from 'twitter-api-v2'
-import { Config, Notified } from './utlis'
+import { Config, Notified, Target } from './utlis'
 
 export default class Crawler {
   private client: TwitterApi
   private channel: TextChannel
+  private target: Target
 
-  constructor(config: Config, client: Client) {
+  constructor(config: Config, client: Client, target: Target) {
     this.client = new TwitterApi({
       appKey: config.twitter.consumerKey,
       appSecret: config.twitter.consumerSecret,
     })
-    const channel = client.channels.resolve(config.discord.channelId)
+    this.target = target
+
+    const channel = client.channels.resolve(target.channelId)
     if (!channel) {
       throw new Error('Channel not found.')
     }
@@ -27,19 +30,22 @@ export default class Crawler {
     this.channel = channel as TextChannel
   }
 
-  public async crawl(targetId: string): Promise<void> {
-    const favorites = await this.client.v1.favoriteTimeline(targetId, {
-      count: 200,
-    })
+  public async crawl(): Promise<void> {
+    const favorites = await this.client.v1.favoriteTimeline(
+      this.target.twitterId,
+      {
+        count: 200,
+      }
+    )
     const tweets = favorites.tweets
 
-    const isFirst = Notified.isFirst()
+    const isFirst = Notified.isFirst(this.target.twitterId)
 
     for (const tweet of tweets) {
       if (!tweet.entities.media) {
         continue
       }
-      if (Notified.isNotified(tweet.id_str)) {
+      if (Notified.isNotified(this.target.twitterId, tweet.id_str)) {
         continue
       }
 
@@ -54,7 +60,7 @@ export default class Crawler {
       const row = new ActionRowBuilder<ButtonBuilder>().addComponents(
         new ButtonBuilder()
           .setCustomId('favorite-' + tweet.id_str)
-          .setEmoji('❤️')
+          .setEmoji('❤')
           .setStyle(ButtonStyle.Secondary),
         new ButtonBuilder()
           .setEmoji('🔁')
@@ -72,7 +78,7 @@ export default class Crawler {
           components: [row],
         })
       }
-      Notified.addNotified(tweet.id_str)
+      Notified.addNotified(this.target.twitterId, tweet.id_str)
     }
   }
 }

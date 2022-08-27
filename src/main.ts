@@ -1,7 +1,7 @@
 import { Client } from 'discord.js'
 import { TwitterApi } from 'twitter-api-v2'
 import Crawler from './crawler'
-import { getConfig } from './utlis'
+import { Config, getConfig } from './utlis'
 
 const config = getConfig()
 const client = new Client({
@@ -18,14 +18,20 @@ export function getClient() {
   return client
 }
 
+async function crawl(config: Config, client: Client) {
+  for (const target of config.targets) {
+    const crawler = new Crawler(config, client, target)
+    await crawler.crawl()
+  }
+}
+
 client.on('ready', async () => {
   console.log(`ready: ${client.user?.tag}`)
 
-  const crawler = new Crawler(config, client)
   setInterval(async () => {
-    await crawler.crawl('543927796')
+    await crawl(config, client)
   }, 1000 * 60 * 10)
-  await crawler.crawl('543927796')
+  await crawl(config, client)
 })
 
 client.on('interactionCreate', async (interaction) => {
