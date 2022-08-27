@@ -83,7 +83,7 @@ export default class Crawler {
               },
               description: tweet.text,
               url: tweetUrl,
-              color: 0x1da1f2,
+              color: 0x1d9bf0,
               fields: [
                 {
                   name: 'Retweet',
