@@ -2,6 +2,7 @@ import fs from 'fs'
 import yaml from 'js-yaml'
 
 export interface Target {
+  name: string
   twitterId: string
   channelId: string
 }
