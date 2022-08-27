@@ -75,7 +75,7 @@ client.on('interactionCreate', async (interaction) => {
     }
     const tweetId = interaction.customId.split('-')[1]
     await axios
-      .post(`http://gateway.docker.internal:7002/favorite/${tweetId}`)
+      .post(`http://host.docker.internal:7002/favorite/${tweetId}`)
       .then(() => {
         interaction.reply({
           content: ':comet: -> :white_check_mark:',
