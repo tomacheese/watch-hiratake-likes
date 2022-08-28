@@ -73,7 +73,7 @@ client.on('interactionCreate', async (interaction) => {
       })
       return
     }
-    const tweetId = interaction.customId.split('-')[1]
+    const tweetId = interaction.customId.split('-')[2]
     await axios
       .post(`http://host.docker.internal:7003/favorite/${tweetId}`)
       .then(() => {
