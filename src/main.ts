@@ -37,6 +37,7 @@ client.on('ready', async () => {
 
 client.on('interactionCreate', async (interaction) => {
   if (!interaction.isButton()) return
+  console.log("interactionCreate@Button: " + interaction.id)
   if (interaction.customId.startsWith('favorite-')) {
     if (interaction.user.id !== config.discord.ownerId) {
       await interaction.reply({
