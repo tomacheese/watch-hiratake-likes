@@ -1,16 +1,18 @@
 import {
   ActionRowBuilder,
+  AnyThreadChannel,
   ButtonBuilder,
   ButtonStyle,
   Client,
   TextChannel,
+  ThreadChannel,
 } from 'discord.js'
 import { TwitterApi } from 'twitter-api-v2'
 import { Config, Notified, Target } from './utlis'
 
 export default class Crawler {
   private client: TwitterApi
-  private channel: TextChannel
+  private channel: TextChannel | AnyThreadChannel
   private target: Target
 
   constructor(config: Config, client: Client, target: Target) {
@@ -29,10 +31,17 @@ export default class Crawler {
     if (!channel.isTextBased()) {
       throw new Error('Channel is not text based.')
     }
-    this.channel = channel as TextChannel
+    this.channel = channel as TextChannel | AnyThreadChannel
   }
 
   public async crawl(): Promise<void> {
+    if (
+      this.channel instanceof ThreadChannel &&
+      !(this.channel as ThreadChannel).joined
+    ) {
+      await (this.channel as ThreadChannel).join()
+    }
+
     const favorites = await this.client.v1.favoriteTimeline(
       this.target.twitterId,
       {
