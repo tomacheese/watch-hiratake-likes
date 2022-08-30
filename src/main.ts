@@ -85,7 +85,9 @@ client.on('interactionCreate', async (interaction) => {
       })
       .catch((e) => {
         interaction.reply({
-          content: `:comet: -> :x: ${e.message} ${e.response.data.detail}`,
+          content: `:comet: -> :x: ${e.message} ${
+            e.response !== undefined ? e.response.data.detail : ''
+          }`,
           ephemeral: true,
         })
       })
