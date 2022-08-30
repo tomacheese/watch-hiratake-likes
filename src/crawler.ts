@@ -85,7 +85,7 @@ export default class Crawler {
                 url: `https://twitter.com/${tweet.user.screen_name}`,
                 icon_url: tweet.user.profile_image_url_https,
               },
-              description: tweet.text,
+              description: tweet.full_text ?? tweet.text,
               url: tweetUrl,
               color: 0x1d9bf0,
               fields: [
