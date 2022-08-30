@@ -68,8 +68,7 @@ client.on('interactionCreate', async (interaction) => {
   if (interaction.customId.startsWith('priv-fav-')) {
     if (interaction.user.id !== config.discord.ownerId) {
       await interaction.reply({
-        content:
-          'このボタンはbook000でふぁぼする用のボタンです。リンクボタンを利用してください。',
+        content: 'リンクボタンを利用してください。',
         ephemeral: true,
       })
       return

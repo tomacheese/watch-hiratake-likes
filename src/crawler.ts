@@ -46,6 +46,7 @@ export default class Crawler {
       this.target.twitterId,
       {
         count: 200,
+        include_entities: true,
       }
     )
     const tweets = favorites.tweets
@@ -88,48 +89,58 @@ export default class Crawler {
       )
 
       if (!isFirst) {
-        for (const mediaIndex in tweet.entities.media) {
-          const media = tweet.entities.media[mediaIndex]
+        const embeds = []
+        const extendedEntities = tweet.extended_entities
+        if (!extendedEntities || !extendedEntities.media) {
+          continue
+        }
+
+        for (const mediaIndex in extendedEntities.media) {
+          const media = extendedEntities.media[mediaIndex]
           const title =
-            tweet.entities.media.length >= 2
-              ? `${mediaIndex + 1} / ${tweet.entities.media.length}`
+            extendedEntities.media.length >= 2
+              ? `${mediaIndex + 1} / ${extendedEntities.media.length}`
               : undefined
-          await this.channel.send({
-            embeds: [
+          embeds.push({
+            title,
+            description: tweet.full_text ?? tweet.text,
+            color: 0x1d9bf0,
+            fields: [
               {
-                title,
-                description: tweet.full_text ?? tweet.text,
-                url: tweetUrl,
-                color: 0x1d9bf0,
-                fields: [
-                  {
-                    name: 'Retweet',
-                    value: tweet.retweet_count.toString(),
-                    inline: true,
-                  },
-                  {
-                    name: 'Likes',
-                    value: tweet.favorite_count.toString(),
-                    inline: true,
-                  },
-                ],
-                author: {
-                  name: `${tweet.user.name} (@${tweet.user.screen_name})`,
-                  url: `https://twitter.com/${tweet.user.screen_name}`,
-                  icon_url: tweet.user.profile_image_url_https,
-                },
-                image: {
-                  url: media.media_url_https,
-                },
-                footer: {
-                  text: `Twitter by ${this.target.name} likes`,
-                },
-                timestamp: new Date(tweet.created_at).toISOString(),
+                name: 'Retweet',
+                value: tweet.retweet_count.toString(),
+                inline: true,
+              },
+              {
+                name: 'Likes',
+                value: tweet.favorite_count.toString(),
+                inline: true,
+              },
+              {
+                name: 'TweetURL',
+                value: tweetUrl,
+                inline: false,
               },
             ],
-            components: [row],
+            author: {
+              name: `${tweet.user.name} (@${tweet.user.screen_name})`,
+              url: `https://twitter.com/${tweet.user.screen_name}`,
+              icon_url: tweet.user.profile_image_url_https,
+            },
+            image: {
+              url: media.media_url_https,
+            },
+            footer: {
+              text: `Twitter by ${this.target.name} likes`,
+            },
+            timestamp: new Date(tweet.created_at).toISOString(),
           })
         }
+
+        await this.channel.send({
+          embeds,
+          components: [row],
+        })
       }
       Notified.addNotified(this.target.twitterId, tweet.id_str)
     }
