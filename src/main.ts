@@ -6,13 +6,13 @@ import { Config, getConfig } from './utlis'
 
 const config = getConfig()
 const client = new Client({
-  intents: ['Guilds', 'GuildMembers', 'GuildMessages'],
+  intents: ['Guilds', 'GuildMembers', 'GuildMessages']
 })
 const twitterClient = new TwitterApi({
   appKey: config.twitter.consumerKey,
   appSecret: config.twitter.consumerSecret,
   accessToken: config.twitter.accessToken,
-  accessSecret: config.twitter.accessSecret,
+  accessSecret: config.twitter.accessSecret
 })
 
 export function getClient() {
@@ -43,25 +43,25 @@ client.on('interactionCreate', async (interaction) => {
       await interaction.reply({
         content:
           'このボタンはbook000でふぁぼする用のボタンです。リンクボタンを利用してください。',
-        ephemeral: true,
+        ephemeral: true
       })
       return
     }
     const tweetId = interaction.customId.split('-')[1]
     await twitterClient.v1
       .post(`favorites/create.json`, {
-        id: tweetId,
+        id: tweetId
       })
       .then(() => {
         interaction.reply({
           content: ':heart: -> :white_check_mark:',
-          ephemeral: true,
+          ephemeral: true
         })
       })
       .catch((e) => {
         interaction.reply({
           content: `:heart: -> :x: ${e.message}`,
-          ephemeral: true,
+          ephemeral: true
         })
       })
   }
@@ -70,7 +70,7 @@ client.on('interactionCreate', async (interaction) => {
       await interaction.reply({
         content:
           'このボタンはbook000でふぁぼする用のボタンです。リンクボタンを利用してください。',
-        ephemeral: true,
+        ephemeral: true
       })
       return
     }
@@ -80,13 +80,15 @@ client.on('interactionCreate', async (interaction) => {
       .then(() => {
         interaction.reply({
           content: ':comet: -> :white_check_mark:',
-          ephemeral: true,
+          ephemeral: true
         })
       })
       .catch((e) => {
         interaction.reply({
-          content: `:comet: -> :x: ${e.message} ${e.response.data.detail}`,
-          ephemeral: true,
+          content: `:comet: -> :x: ${e.message} ${
+            e.response !== undefined ? e.response.data.detail : ''
+          }`,
+          ephemeral: true
         })
       })
   }
