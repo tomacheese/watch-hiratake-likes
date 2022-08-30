@@ -3,7 +3,7 @@ import {
   ButtonBuilder,
   ButtonStyle,
   Client,
-  TextChannel,
+  TextChannel
 } from 'discord.js'
 import { TwitterApi } from 'twitter-api-v2'
 import { Config, Notified, Target } from './utlis'
@@ -17,6 +17,8 @@ export default class Crawler {
     this.client = new TwitterApi({
       appKey: config.twitter.consumerKey,
       appSecret: config.twitter.consumerSecret,
+      accessToken: target.accessToken,
+      accessSecret: target.accessTokenSecret
     })
     this.target = target
 
@@ -34,7 +36,7 @@ export default class Crawler {
     const favorites = await this.client.v1.favoriteTimeline(
       this.target.twitterId,
       {
-        count: 200,
+        count: 200
       }
     )
     const tweets = favorites.tweets
@@ -83,7 +85,7 @@ export default class Crawler {
               author: {
                 name: `${tweet.user.name} (@${tweet.user.screen_name})`,
                 url: `https://twitter.com/${tweet.user.screen_name}`,
-                icon_url: tweet.user.profile_image_url_https,
+                icon_url: tweet.user.profile_image_url_https
               },
               description: tweet.full_text ?? tweet.text,
               url: tweetUrl,
@@ -92,24 +94,24 @@ export default class Crawler {
                 {
                   name: 'Retweet',
                   value: tweet.retweet_count.toString(),
-                  inline: true,
+                  inline: true
                 },
                 {
                   name: 'Likes',
                   value: tweet.favorite_count.toString(),
-                  inline: true,
-                },
+                  inline: true
+                }
               ],
               image: {
-                url: tweet.entities.media[0].media_url_https,
+                url: tweet.entities.media[0].media_url_https
               },
               footer: {
-                text: `Twitter by ${this.target.name} likes`,
+                text: `Twitter by ${this.target.name} likes`
               },
-              timestamp: new Date(tweet.created_at).toISOString(),
-            },
+              timestamp: new Date(tweet.created_at).toISOString()
+            }
           ],
-          components: [row],
+          components: [row]
         })
       }
       Notified.addNotified(this.target.twitterId, tweet.id_str)
