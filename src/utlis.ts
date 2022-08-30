@@ -5,6 +5,8 @@ export interface Target {
   name: string
   twitterId: string
   channelId: string
+  accessToken?: string
+  accessTokenSecret?: string
 }
 
 export interface Config {

@@ -17,6 +17,8 @@ export default class Crawler {
     this.client = new TwitterApi({
       appKey: config.twitter.consumerKey,
       appSecret: config.twitter.consumerSecret,
+      accessToken: target.accessToken,
+      accessSecret: target.accessTokenSecret,
     })
     this.target = target
 
