@@ -99,7 +99,6 @@ export default class Crawler {
         // 同一ツイートのうち、一番最初の画像だけに適用する
         const firstEmbed: APIEmbed = {
           description: tweet.full_text ?? tweet.text,
-          color: 0x1d9bf0,
           fields: [
             {
               name: 'Retweet',
@@ -144,6 +143,7 @@ export default class Crawler {
             image: {
               url: media.media_url_https,
             },
+            color: 0x1d9bf0,
             ...(parseInt(mediaIndex, 10) === 0
               ? firstEmbed
               : parseInt(mediaIndex, 10) === extendedEntities.media.length - 1
