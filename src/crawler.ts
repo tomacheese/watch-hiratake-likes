@@ -123,6 +123,7 @@ export default class Crawler {
           },
         }
         // 同一ツイートのうち、一番最後の画像だけに適用する
+        // 単一画像の場合は、一番最初の画像に適用する
         const lastEmbed: APIEmbed = {
           footer: {
             text: `Twitter by ${this.target.name} likes`,
@@ -144,9 +145,8 @@ export default class Crawler {
               url: media.media_url_https,
             },
             color: 0x1d9bf0,
-            ...(parseInt(mediaIndex, 10) === 0
-              ? firstEmbed
-              : parseInt(mediaIndex, 10) === extendedEntities.media.length - 1
+            ...(parseInt(mediaIndex, 10) === 0 ? firstEmbed : {}),
+            ...(parseInt(mediaIndex, 10) === extendedEntities.media.length - 1
               ? lastEmbed
               : {}),
           })
